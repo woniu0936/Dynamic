@@ -8,11 +8,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.hook.dynamic.utils.Utils;
+import com.hook.pluginlib.IBean;
+import com.hook.pluginlib.ICallback;
 
 import java.io.File;
-import java.lang.reflect.Method;
 
 import dalvik.system.DexClassLoader;
 
@@ -57,11 +59,15 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     Class<?> aClass = dexClassLoader.loadClass("com.hook.plugin01.Bean");
                     Object beanObj = aClass.newInstance();
-                    Method getNameMethod = aClass.getMethod("getName");
-                    getNameMethod.setAccessible(true);
-                    String name = (String) getNameMethod.invoke(beanObj);
-                    tvContent.setText(name);
-                    Toast.makeText(MainActivity.this, "name: " + name, Toast.LENGTH_SHORT).show();
+                    IBean bean = (IBean) beanObj;
+                    bean.register(new ICallback() {
+                        @Override
+                        public void sendResult(String result) {
+                            tvContent.setText(result);
+                            Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
                 }
