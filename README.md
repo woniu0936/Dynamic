@@ -1,0 +1,2 @@
+# Dynamic
+Dynamic Plugin Demo
