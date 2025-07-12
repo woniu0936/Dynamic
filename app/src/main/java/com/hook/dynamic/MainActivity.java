@@ -21,42 +21,16 @@ import java.lang.reflect.Method;
 
 import dalvik.system.DexClassLoader;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
-    public static final String TAG = "Dynamic";
-
-    private String apkName = "plugin01-debug.apk";
-    private String dexPath;
-    private File fileRelease;
-    private DexClassLoader dexClassLoader;
-    private AssetManager mAssetManager;
-    private Resources mResources;
-    private Resources.Theme mTheme;
     private TextView tvContent;
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(newBase);
-        try {
-            Utils.extractAssets(newBase, apkName);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        File fileStreamPath = getFileStreamPath(apkName);
-        dexPath = fileStreamPath.getPath();
-
-        fileRelease = getDir("dex", 0); // 0表示Context.MODE_PRIVATE
-        Log.d(TAG, "dexPath: " + dexPath);
-        Log.d(TAG, "fileRelease.getAbsolutePath(): " + fileRelease.getAbsolutePath());
-
-        dexClassLoader = new DexClassLoader(dexPath, fileRelease.getAbsolutePath(), null, getClassLoader());
-
         tvContent = findViewById(R.id.tv_content);
         loadPluginObj();
         setOnBtn02Click();
@@ -66,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_02).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadResource();
+                loadResources();
                 Class mLoadClassDynamic = null;
                 try {
                     mLoadClassDynamic = dexClassLoader.loadClass("com.hook.plugin01.Dynamic");
@@ -105,41 +79,4 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void loadResource() {
-        try {
-            AssetManager assetManager = AssetManager.class.newInstance();
-            Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
-            addAssetPath.invoke(assetManager, dexPath);
-            mAssetManager = assetManager;
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
-        mResources = new Resources(mAssetManager, super.getResources().getDisplayMetrics(), super.getResources().getConfiguration());
-        mTheme = mResources.newTheme();
-        mTheme.setTo(super.getTheme());
-    }
-
-    @Override
-    public AssetManager getAssets() {
-        if (mAssetManager == null) {
-            return super.getAssets();
-        }
-        return mAssetManager;
-    }
-
-    @Override
-    public Resources getResources() {
-        if (mResources == null) {
-            return super.getResources();
-        }
-        return mResources;
-    }
-
-    @Override
-    public Resources.Theme getTheme() {
-        if (mTheme == null) {
-            return super.getTheme();
-        }
-        return mTheme;
-    }
 }
