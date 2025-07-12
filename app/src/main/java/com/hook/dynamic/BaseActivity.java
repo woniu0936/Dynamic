@@ -8,12 +8,13 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.loader.content.Loader;
 
 import com.hook.dynamic.utils.Utils;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import dalvik.system.DexClassLoader;
 
@@ -24,12 +25,11 @@ public class BaseActivity extends AppCompatActivity {
     protected AssetManager mAssetManager;
     protected Resources mResources;
     protected Resources.Theme mTheme;
-    protected String dexPath = null;    //apk文件地址
     protected File fileRelease = null;  //释放目录
 
-    protected DexClassLoader dexClassLoader = null;
+    protected Map<String, ApkPluginInfo> mApkPluginInfos = new HashMap<>();
 
-    private String pluginApkName = "plugin01-debug.apk";
+    protected String pluginApkName = "plugin01-debug.apk";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,14 +49,20 @@ public class BaseActivity extends AppCompatActivity {
 
     private void loadPluginApk(String pluginApkName) {
         File extractFile = this.getFileStreamPath(pluginApkName);
-        dexPath = extractFile.getPath();
+        String dexPath = extractFile.getPath();
         fileRelease = getDir("dex", 0);
-        dexClassLoader = new DexClassLoader(dexPath, fileRelease.getAbsolutePath(), null, getClassLoader());
+        DexClassLoader dexClassLoader = new DexClassLoader(dexPath, fileRelease.getAbsolutePath(), null, getClassLoader());
         Log.d(TAG, "dexPath: " + dexPath);
         Log.d(TAG, "fileRelease.getAbsolutePath(): " + fileRelease.getAbsolutePath());
+        ApkPluginInfo info = new ApkPluginInfo(dexPath, dexClassLoader);
+        mApkPluginInfos.put(pluginApkName, info);
     }
 
-    protected void loadResources() {
+    protected ApkPluginInfo getApkPluginInfo(String apkName) {
+        return mApkPluginInfos.get(apkName);
+    }
+
+    protected void loadResources(String dexPath) {
         try {
             AssetManager assetManager = AssetManager.class.newInstance();
             Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);

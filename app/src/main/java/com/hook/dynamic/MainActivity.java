@@ -14,13 +14,14 @@ import com.hook.pluginlib.IDynamic;
 public class MainActivity extends BaseActivity {
 
     private TextView tvContent;
-
+    private ApkPluginInfo mApkPluginInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tvContent = findViewById(R.id.tv_content);
+        mApkPluginInfo = getApkPluginInfo(pluginApkName);
         loadPluginObj();
         setOnBtn02Click();
         findViewById(R.id.btn_03).setOnClickListener(new View.OnClickListener() {
@@ -36,10 +37,11 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.btn_02).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadResources();
+
+                loadResources(mApkPluginInfo.getDexPath());
                 Class mLoadClassDynamic = null;
                 try {
-                    mLoadClassDynamic = dexClassLoader.loadClass("com.hook.plugin01.Dynamic");
+                    mLoadClassDynamic = mApkPluginInfo.getClassLoader().loadClass("com.hook.plugin01.Dynamic");
                     Object dynamicObj = mLoadClassDynamic.newInstance();
                     IDynamic dynamic = (IDynamic) dynamicObj;
                     String content = dynamic.getStringByResId(MainActivity.this);
@@ -57,7 +59,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    Class<?> aClass = dexClassLoader.loadClass("com.hook.plugin01.Bean");
+                    Class<?> aClass = mApkPluginInfo.getClassLoader().loadClass("com.hook.plugin01.Bean");
                     Object beanObj = aClass.newInstance();
                     IBean bean = (IBean) beanObj;
                     bean.register(new ICallback() {

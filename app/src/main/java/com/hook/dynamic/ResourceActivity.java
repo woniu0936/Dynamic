@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 
 import com.hook.dynamic.utils.RefInvoke;
 
+import dalvik.system.DexClassLoader;
+
 public class ResourceActivity extends BaseActivity {
 
     private TextView tvText;
@@ -30,15 +32,16 @@ public class ResourceActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 // 执行换肤功能
-                loadResources();
-                doStart();
+                ApkPluginInfo pluginInfo = getApkPluginInfo(pluginApkName);
+                loadResources(pluginInfo.getDexPath());
+                doStart(pluginInfo.getClassLoader());
             }
         });
     }
 
-    private void doStart() {
+    private void doStart(DexClassLoader classLoader) {
         try {
-            Class clazz = dexClassLoader.loadClass("com.hook.plugin01.utils.UIUtils");
+            Class clazz = classLoader.loadClass("com.hook.plugin01.utils.UIUtils");
             String str = RefInvoke.invokeStaticMethod(clazz, "getTextString", Context.class, this).toString();
             tvText.setText(str);
             Drawable img = (Drawable) RefInvoke.invokeStaticMethod(clazz, "getImageDrawable", Context.class, this);
