@@ -1,30 +1,19 @@
 package com.hook.dynamic;
 
-import android.content.Context;
-import android.content.res.AssetManager;
-import android.content.res.Resources;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.hook.dynamic.utils.Utils;
 import com.hook.pluginlib.IBean;
 import com.hook.pluginlib.ICallback;
 import com.hook.pluginlib.IDynamic;
 
-import java.io.File;
-import java.lang.reflect.Method;
-
-import dalvik.system.DexClassLoader;
-
 public class MainActivity extends BaseActivity {
 
     private TextView tvContent;
-
 
 
     @Override
@@ -34,6 +23,13 @@ public class MainActivity extends BaseActivity {
         tvContent = findViewById(R.id.tv_content);
         loadPluginObj();
         setOnBtn02Click();
+        findViewById(R.id.btn_03).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ResourceActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void setOnBtn02Click() {
