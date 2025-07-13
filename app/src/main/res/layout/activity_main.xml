@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#6600ff00"
     tools:context=".MainActivity">
 
     <TextView
@@ -22,7 +23,27 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:text="点击"
+        app:layout_constraintBottom_toTopOf="@id/btn_02"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="点击加载资源"
         app:layout_constraintBottom_toTopOf="@id/tv_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="打开换肤页面"
+        app:layout_constraintBottom_toTopOf="@id/btn_01"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
